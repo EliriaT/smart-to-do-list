@@ -28,6 +28,7 @@ form input, form button {
     font-size: 2rem;
     border: none;
     background: white;
+    outline: none;
 }
 
 form button {
@@ -85,7 +86,7 @@ form button:hover {
     padding: 0rem 0.5rem;
 }
 
-.fa-trash, fa-ckeck{
+.fa-trash, .fa-check{
     pointer-events: none;
 }
 
@@ -97,4 +98,43 @@ form button:hover {
 .fall-anim{
     transform: translateY(7rem) rotateZ(20deg);
     opacity: 0;
+}
+
+select{
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    outline: none;
+    border: none;
+    background: white;
+}
+
+.select{
+    margin: 1rem;
+    position: relative;
+    overflow: hidden;
+}
+select{
+    color: #3E5622;
+    width: 10rem;
+    padding: 1rem;
+    cursor: pointer;
+
+}
+.select::after{
+    /* the arrow*/
+    content:"\25BC";
+    position: absolute;
+    background: #3E5622;
+    top: 0;
+    right: 0;
+    padding: 1rem;
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.select:hover::after{
+    /* the arrow*/
+   background: #e7fde7;
+    color: #3E5622;
 }

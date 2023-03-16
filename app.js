@@ -4,10 +4,12 @@
 const toDoInput = document.querySelector(".todo-input");
 const toDoButton = document.querySelector(".todo-button");
 const toDoList = document.querySelector(".todo-list");
+const filterOption = document.querySelector(".filter-dodo")
 
 // Event Listeners
 toDoButton.addEventListener('click', addToDo)
 toDoList.addEventListener('click', deleteAndCheck)
+filterOption.addEventListener("click",filterToDo)
 
 // Functions
 function deleteAndCheck(event){
@@ -61,4 +63,30 @@ function addToDo(event) {
     // append to the unordered list
     toDoList.appendChild(toDoDiv)
 
+}
+
+function filterToDo(event){
+    const filter = event.target.value
+    const toDos = toDoList.childNodes;
+    toDos.forEach(function (todo){
+        switch (filter){
+            case "all":
+                todo.style.display = "flex";
+                break;
+            case "finished":
+                if (todo.classList.contains("completed")){
+                    todo.style.display = "flex";
+                }else {
+                    todo.style.display = "none";
+                }
+                break;
+            case "in-progress":
+                if (todo.classList.contains("completed")){
+                    todo.style.display = "none";
+                }else {
+                    todo.style.display = "flex";
+                }
+                break;
+        }
+    })
 }
