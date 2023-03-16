@@ -7,23 +7,24 @@ const toDoList = document.querySelector(".todo-list");
 const filterOption = document.querySelector(".filter-dodo")
 
 // Event Listeners
+document.addEventListener('DOMContentLoaded', getToDosFromLocalStorage)
 toDoButton.addEventListener('click', addToDo)
 toDoList.addEventListener('click', deleteAndCheck)
-filterOption.addEventListener("click",filterToDo)
+filterOption.addEventListener("click", filterToDo)
 
 // Functions
-function deleteAndCheck(event){
+function deleteAndCheck(event) {
     const item = event.target;   // the object that was pressed
-
-    if (item.classList[0] === "complete-btn"){
-        item.parentElement.classList.toggle("completed")
+    const toDoDiv = item.parentElement
+    if (item.classList[0] === "complete-btn") {
+        toDoDiv.classList.toggle("completed")
     }
-    if (item.classList[0] === "delete-btn"){
+    if (item.classList[0] === "delete-btn") {
         // small animation on delete
-        const toDoDiv = item.parentElement
         toDoDiv.classList.add("fall-anim")
-        toDoDiv.addEventListener('transitionend', function (){
-            item.parentElement .remove()
+        removeToDoFromLocalStorage(toDoDiv)
+        toDoDiv.addEventListener('transitionend', function () {
+            item.parentElement.remove()
         })
 
     }
@@ -33,7 +34,7 @@ function deleteAndCheck(event){
 function addToDo(event) {
     event.preventDefault()      //to prevent the default refresh of the page on submit
 
-    const toDoTask  = toDoInput.value;
+    const toDoTask = toDoInput.value;
     toDoInput.value = "";
 
     // create todo div
@@ -60,33 +61,104 @@ function addToDo(event) {
     toDoDiv.appendChild(completedButton)
     toDoDiv.appendChild(deleteButton)
 
+    //     save in local storage
+    saveInLocalStorage(toDoTask)
+
     // append to the unordered list
     toDoList.appendChild(toDoDiv)
 
 }
 
-function filterToDo(event){
+function filterToDo(event) {
     const filter = event.target.value
     const toDos = toDoList.childNodes;
-    toDos.forEach(function (todo){
-        switch (filter){
+    toDos.forEach(function (todo) {
+        switch (filter) {
             case "all":
                 todo.style.display = "flex";
                 break;
             case "finished":
-                if (todo.classList.contains("completed")){
+                if (todo.classList.contains("completed")) {
                     todo.style.display = "flex";
-                }else {
+                } else {
                     todo.style.display = "none";
                 }
                 break;
             case "in-progress":
-                if (todo.classList.contains("completed")){
+                if (todo.classList.contains("completed")) {
                     todo.style.display = "none";
-                }else {
+                } else {
                     todo.style.display = "flex";
                 }
                 break;
         }
     })
+}
+
+function saveInLocalStorage(toDo) {
+
+    let toDoItems;
+    // if already present in local storage
+    if (localStorage.getItem('toDos') == null) {
+        toDoItems = []
+    } else {
+        toDoItems = JSON.parse(localStorage.getItem("toDos"))
+    }
+    toDoItems.push(toDo)
+    localStorage.setItem("toDos", JSON.stringify(toDoItems))
+}
+
+function getToDosFromLocalStorage() {
+
+    let toDoItems;
+    // if already present in local storage
+    if (localStorage.getItem('toDos') == null) {
+        toDoItems = [];
+    } else {
+        toDoItems = JSON.parse(localStorage.getItem("toDos"));
+    }
+
+    toDoItems.forEach(function (toDo) {
+        const toDoDiv = document.createElement("div");
+        toDoDiv.classList.add("todo");
+
+        // create li
+        const newToDoLI = document.createElement("li");
+        newToDoLI.classList.add("todo-item");
+        newToDoLI.innerText = toDo;
+
+        // create done mark button
+        const completedButton = document.createElement("button");
+        completedButton.innerHTML = '<i class="fas fa-check"></i>';
+        completedButton.classList.add("complete-btn");
+
+        // create delete button
+        const deleteButton = document.createElement("button");
+        deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
+        deleteButton.classList.add("delete-btn");
+
+        // the to do div contains such children as todoLI check button and delete button
+        toDoDiv.appendChild(newToDoLI)
+        toDoDiv.appendChild(completedButton)
+        toDoDiv.appendChild(deleteButton)
+
+        // append to the unordered list
+        toDoList.appendChild(toDoDiv)
+    })
+
+}
+
+// TODO MAKE A FUNCTION FOR GETING ITEMS FROM LS
+function removeToDoFromLocalStorage(toDoDiv) {
+    let toDoItems;
+    // if already present in local storage
+    if (localStorage.getItem('toDos') == null) {
+        toDoItems = [];
+    } else {
+        toDoItems = JSON.parse(localStorage.getItem("toDos"));
+    }
+    const toDoText = toDoDiv.children[0].innerText;
+    const todoIndex = toDoItems.indexOf(toDoText);
+    toDoItems.splice(todoIndex,1);
+    localStorage.setItem("toDos",JSON.stringify(toDoItems));
 }
