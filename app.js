@@ -1,5 +1,12 @@
 "use strict";
 
+// const toDoLS = {
+//   id: 0,
+//   text: "",
+//   done: bool,
+//
+// };
+
 // Selectors
 const toDoInput = document.querySelector(".todo-input");
 const toDoButton = document.querySelector(".todo-button");
@@ -7,7 +14,7 @@ const toDoList = document.querySelector(".todo-list");
 const filterOption = document.querySelector(".filter-dodo")
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', getToDosFromLocalStorage)
+document.addEventListener('DOMContentLoaded', getAndDisplayToDosFromLocalStorage)
 toDoButton.addEventListener('click', addToDo)
 toDoList.addEventListener('click', deleteAndCheck)
 filterOption.addEventListener("click", filterToDo)
@@ -18,11 +25,14 @@ function deleteAndCheck(event) {
     const toDoDiv = item.parentElement
     if (item.classList[0] === "complete-btn") {
         toDoDiv.classList.toggle("completed")
+        updateToDoInLS(toDoDiv)
     }
     if (item.classList[0] === "delete-btn") {
         // small animation on delete
         toDoDiv.classList.add("fall-anim")
+
         removeToDoFromLocalStorage(toDoDiv)
+
         toDoDiv.addEventListener('transitionend', function () {
             item.parentElement.remove()
         })
@@ -61,8 +71,8 @@ function addToDo(event) {
     toDoDiv.appendChild(completedButton)
     toDoDiv.appendChild(deleteButton)
 
-    //     save in local storage
-    saveInLocalStorage(toDoTask)
+    //  save in local storage, the toDoDiv id is setted
+    saveInLocalStorage(toDoTask,toDoDiv)
 
     // append to the unordered list
     toDoList.appendChild(toDoDiv)
@@ -95,8 +105,7 @@ function filterToDo(event) {
     })
 }
 
-function saveInLocalStorage(toDo) {
-
+function getToDosFromLS() {
     let toDoItems;
     // if already present in local storage
     if (localStorage.getItem('toDos') == null) {
@@ -104,19 +113,43 @@ function saveInLocalStorage(toDo) {
     } else {
         toDoItems = JSON.parse(localStorage.getItem("toDos"))
     }
-    toDoItems.push(toDo)
+    return toDoItems
+}
+
+// the toDo is a text value
+function saveInLocalStorage(toDo,toDoDiv) {
+    let toDoItems = getToDosFromLS();
+
+    const toDoObj = {
+        id: toDoItems.length + 1,
+        text: toDo,
+        done: false,
+
+    };
+
+    toDoDiv.id = toDoObj.id
+
+    toDoItems.push(toDoObj)
     localStorage.setItem("toDos", JSON.stringify(toDoItems))
 }
 
-function getToDosFromLocalStorage() {
+function updateToDoInLS(toDoDiv){
+    const toDoID = Number(toDoDiv.id);
 
-    let toDoItems;
-    // if already present in local storage
-    if (localStorage.getItem('toDos') == null) {
-        toDoItems = [];
-    } else {
-        toDoItems = JSON.parse(localStorage.getItem("toDos"));
-    }
+    let toDoItems = getToDosFromLS();
+
+    const toBeUpdatedItemIndex = toDoItems.findIndex(function (toDo) {
+        return toDo.id === toDoID
+    })
+
+    toDoItems[toBeUpdatedItemIndex].done = !toDoItems[toBeUpdatedItemIndex].done
+    localStorage.setItem("toDos", JSON.stringify(toDoItems))
+
+}
+
+function getAndDisplayToDosFromLocalStorage() {
+
+    let toDoItems = getToDosFromLS();
 
     toDoItems.forEach(function (toDo) {
         const toDoDiv = document.createElement("div");
@@ -125,7 +158,7 @@ function getToDosFromLocalStorage() {
         // create li
         const newToDoLI = document.createElement("li");
         newToDoLI.classList.add("todo-item");
-        newToDoLI.innerText = toDo;
+        newToDoLI.innerText = toDo.text;
 
         // create done mark button
         const completedButton = document.createElement("button");
@@ -138,27 +171,33 @@ function getToDosFromLocalStorage() {
         deleteButton.classList.add("delete-btn");
 
         // the to do div contains such children as todoLI check button and delete button
-        toDoDiv.appendChild(newToDoLI)
-        toDoDiv.appendChild(completedButton)
-        toDoDiv.appendChild(deleteButton)
+        toDoDiv.appendChild(newToDoLI);
+        toDoDiv.appendChild(completedButton);
+        toDoDiv.appendChild(deleteButton);
+
+        if (toDo.done){
+            toDoDiv.classList.toggle("completed");
+        }
+
+        // setting the id of the div as the id of the object from the local storage, but transforming ID into string
+        toDoDiv.id = toDo.id.toString();
 
         // append to the unordered list
-        toDoList.appendChild(toDoDiv)
+        toDoList.appendChild(toDoDiv);
     })
 
 }
 
-// TODO MAKE A FUNCTION FOR GETING ITEMS FROM LS
+
 function removeToDoFromLocalStorage(toDoDiv) {
-    let toDoItems;
-    // if already present in local storage
-    if (localStorage.getItem('toDos') == null) {
-        toDoItems = [];
-    } else {
-        toDoItems = JSON.parse(localStorage.getItem("toDos"));
-    }
-    const toDoText = toDoDiv.children[0].innerText;
-    const todoIndex = toDoItems.indexOf(toDoText);
-    toDoItems.splice(todoIndex,1);
-    localStorage.setItem("toDos",JSON.stringify(toDoItems));
+    const toDoID = Number(toDoDiv.id);
+
+    let toDoItems = getToDosFromLS();
+
+    const toBeDeletedItemIndex = toDoItems.findIndex(function (toDo) {
+        return toDo.id === toDoID
+    })
+
+    toDoItems.splice(toBeDeletedItemIndex, 1);
+    localStorage.setItem("toDos", JSON.stringify(toDoItems));
 }
