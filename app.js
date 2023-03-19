@@ -4,6 +4,8 @@
 //   id: 0,
 //   text: "",
 //   done: bool,
+//   date: date,
+//   time: time
 //
 // };
 
@@ -72,6 +74,9 @@ function addToDo(event) {
     const toDoDiv = document.createElement("div");
     toDoDiv.classList.add("todo");
 
+    // const firstRowDiv = document.createElement("div")
+    // firstRowDiv.classList.add("todo");
+
     // create li
     const newToDoLI = document.createElement("li");
     newToDoLI.classList.add("todo-item");
@@ -87,13 +92,38 @@ function addToDo(event) {
     deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
     deleteButton.classList.add("delete-btn");
 
+    const date = document.getElementById("date")
+    const time = document.getElementById("time")
+
+    const calendarIcon = document.createElement("i")
+    calendarIcon.classList.add("fa-regular")
+    calendarIcon.classList.add("fa-calendar")
+
+    const dateT = document.createElement("p")
+    dateT.classList.add("dateT")
+    dateT.innerText = date.value
+
+    const clockIcon = document.createElement("i")
+    clockIcon.classList.add("fa-solid")
+    clockIcon.classList.add("fa-clock")
+
+    const timeT = document.createElement("p")
+    timeT.classList.add("timeT")
+    timeT.innerText = time.value
+
     // the to do div contains such children as todoLI check button and delete button
-    toDoDiv.appendChild(newToDoLI)
-    toDoDiv.appendChild(completedButton)
-    toDoDiv.appendChild(deleteButton)
+    toDoDiv.appendChild(newToDoLI);
+    toDoDiv.appendChild(calendarIcon);
+    toDoDiv.appendChild(dateT);
+    toDoDiv.appendChild(clockIcon);
+    toDoDiv.appendChild(timeT);
+
+    toDoDiv.appendChild(completedButton);
+    toDoDiv.appendChild(deleteButton);
+
 
     //  save in local storage, the toDoDiv id is setted
-    saveInLocalStorage(toDoTask, toDoDiv)
+    saveInLocalStorage(toDoTask, toDoDiv, date.value, time.value)
 
     // append to the unordered list
     toDoList.appendChild(toDoDiv)
@@ -141,13 +171,15 @@ function getToDosFromLS() {
 }
 
 // the toDo is a text value
-function saveInLocalStorage(toDo, toDoDiv) {
+function saveInLocalStorage(toDo, toDoDiv, dateV, timeV) {
     let toDoItems = getToDosFromLS();
 
     const toDoObj = {
         id: toDoItems.length + 1,
         text: toDo,
         done: false,
+        date: dateV,
+        time: timeV
 
     };
 
@@ -194,8 +226,30 @@ function getAndDisplayToDosFromLocalStorage() {
         deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
         deleteButton.classList.add("delete-btn");
 
-        // the to do div contains such children as todoLI check button and delete button
+        const calendarIcon = document.createElement("i")
+        calendarIcon.classList.add("fa-regular")
+        calendarIcon.classList.add("fa-calendar")
+
+        const dateT = document.createElement("p")
+        dateT.classList.add("dateT")
+        dateT.innerText = toDo.date
+
+        const clockIcon = document.createElement("i")
+        clockIcon.classList.add("fa-solid")
+        clockIcon.classList.add("fa-clock")
+
+        const timeT = document.createElement("p")
+        timeT.classList.add("timeT")
+        timeT.innerText = toDo.time
+
+
+        // the to do div contains such children as todoLI check button and delete button and others
         toDoDiv.appendChild(newToDoLI);
+        toDoDiv.appendChild(calendarIcon);
+        toDoDiv.appendChild(dateT);
+        toDoDiv.appendChild(clockIcon);
+        toDoDiv.appendChild(timeT);
+
         toDoDiv.appendChild(completedButton);
         toDoDiv.appendChild(deleteButton);
 
