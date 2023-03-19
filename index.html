@@ -1,39 +1,58 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+          integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+          crossorigin="anonymous" referrerpolicy="no-referrer"/>
     <title>Irina, Tiora, FAF203</title>
     <link rel="stylesheet" href="style.css">
     <script src="app.js" defer></script>
-  </head>
-  <body>
-  <header>
-    <h1>
-      Irina's To do List !
-    </h1>
-  </header>
-  <form>
-    <input type="text" class = "todo-input">
-    <button class = "todo-button" type="submit">
-      <i class="fas fa-plus-square"></i>
-    </button>
-    <div class="select">
-      <select name="todos" class="filter-dodo">
-        <option value="all">All</option>
-        <option value="finished">Finished</option>
-        <option value="in-progress">In progress</option>
-      </select>
+</head>
+<body>
+
+<div class="popUpMain">
+    <div class="popup">
+        <h1 class="popHeading">
+            What is your name?
+        </h1>
+        <input type="text" id="nameInput" placeholder="your name" autofocus>
+        <br>
+
+        <button class="hiButton">Hi</button>
     </div>
 
-  </form>
+</div>
 
-  <div class="todo-container">
+
+<header class="main-content">
+    <h1 class="headerName">
+        Irina's To do List !
+    </h1>
+</header>
+
+<form class="main-content">
+    <input type="text" class="todo-input">
+    <button class="todo-button" type="submit">
+        <i class="fas fa-plus-square"></i>
+    </button>
+    <div class="select">
+        <select name="todos" class="filter-dodo">
+            <option value="all">All</option>
+            <option value="finished">Finished</option>
+            <option value="in-progress">In progress</option>
+        </select>
+    </div>
+
+</form>
+
+<div class="todo-container main-content">
     <ul class="todo-list"></ul>
-  </div>
-  </body>
+</div>
+
+</body>
 </html>

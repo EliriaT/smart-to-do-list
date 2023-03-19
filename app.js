@@ -7,17 +7,32 @@
 //
 // };
 
+
+// TODO FIX BUG ADD TO DO WHEN FILTERED
+
+// Constants
+const TO_DO_STORAGE_KEY = "to-dos"
+const USERNAME_STORAGE_KEY = "username"
+
 // Selectors
 const toDoInput = document.querySelector(".todo-input");
 const toDoButton = document.querySelector(".todo-button");
 const toDoList = document.querySelector(".todo-list");
-const filterOption = document.querySelector(".filter-dodo")
+const filterOption = document.querySelector(".filter-dodo");
+const nameInput = document.getElementById('nameInput');
+const hiButton = document.querySelector(".hiButton");
+const toDoListName = document.querySelector(".headerName")
+
 
 // Event Listeners
-document.addEventListener('DOMContentLoaded', getAndDisplayToDosFromLocalStorage)
-toDoButton.addEventListener('click', addToDo)
-toDoList.addEventListener('click', deleteAndCheck)
-filterOption.addEventListener("click", filterToDo)
+document.addEventListener('DOMContentLoaded', getAndDisplayToDosFromLocalStorage);
+document.addEventListener('DOMContentLoaded', getUsername);
+toDoButton.addEventListener('click', addToDo);
+toDoList.addEventListener('click', deleteAndCheck);
+filterOption.addEventListener("click", filterToDo);
+nameInput.addEventListener("blur", focusAlwaysOn);
+nameInput.addEventListener("input", helloGreeting);
+hiButton.addEventListener("click", saveUserNameInLS);
 
 // Functions
 function deleteAndCheck(event) {
@@ -72,7 +87,7 @@ function addToDo(event) {
     toDoDiv.appendChild(deleteButton)
 
     //  save in local storage, the toDoDiv id is setted
-    saveInLocalStorage(toDoTask,toDoDiv)
+    saveInLocalStorage(toDoTask, toDoDiv)
 
     // append to the unordered list
     toDoList.appendChild(toDoDiv)
@@ -108,16 +123,16 @@ function filterToDo(event) {
 function getToDosFromLS() {
     let toDoItems;
     // if already present in local storage
-    if (localStorage.getItem('toDos') == null) {
+    if (localStorage.getItem(TO_DO_STORAGE_KEY) == null) {
         toDoItems = []
     } else {
-        toDoItems = JSON.parse(localStorage.getItem("toDos"))
+        toDoItems = JSON.parse(localStorage.getItem(TO_DO_STORAGE_KEY))
     }
     return toDoItems
 }
 
 // the toDo is a text value
-function saveInLocalStorage(toDo,toDoDiv) {
+function saveInLocalStorage(toDo, toDoDiv) {
     let toDoItems = getToDosFromLS();
 
     const toDoObj = {
@@ -130,10 +145,10 @@ function saveInLocalStorage(toDo,toDoDiv) {
     toDoDiv.id = toDoObj.id
 
     toDoItems.push(toDoObj)
-    localStorage.setItem("toDos", JSON.stringify(toDoItems))
+    localStorage.setItem(TO_DO_STORAGE_KEY, JSON.stringify(toDoItems))
 }
 
-function updateToDoInLS(toDoDiv){
+function updateToDoInLS(toDoDiv) {
     const toDoID = Number(toDoDiv.id);
 
     let toDoItems = getToDosFromLS();
@@ -143,7 +158,7 @@ function updateToDoInLS(toDoDiv){
     })
 
     toDoItems[toBeUpdatedItemIndex].done = !toDoItems[toBeUpdatedItemIndex].done
-    localStorage.setItem("toDos", JSON.stringify(toDoItems))
+    localStorage.setItem(TO_DO_STORAGE_KEY, JSON.stringify(toDoItems))
 
 }
 
@@ -175,7 +190,7 @@ function getAndDisplayToDosFromLocalStorage() {
         toDoDiv.appendChild(completedButton);
         toDoDiv.appendChild(deleteButton);
 
-        if (toDo.done){
+        if (toDo.done) {
             toDoDiv.classList.toggle("completed");
         }
 
@@ -185,7 +200,7 @@ function getAndDisplayToDosFromLocalStorage() {
         // append to the unordered list
         toDoList.appendChild(toDoDiv);
     })
-
+    nameInput.value = ""
 }
 
 
@@ -199,5 +214,41 @@ function removeToDoFromLocalStorage(toDoDiv) {
     })
 
     toDoItems.splice(toBeDeletedItemIndex, 1);
-    localStorage.setItem("toDos", JSON.stringify(toDoItems));
+    localStorage.setItem(TO_DO_STORAGE_KEY, JSON.stringify(toDoItems));
+}
+
+function getUsername() {
+    let username;
+    // if already present in local storage
+    if (localStorage.getItem(USERNAME_STORAGE_KEY) == null) {
+        username = ""
+    } else {
+        username = JSON.parse(localStorage.getItem(USERNAME_STORAGE_KEY))
+    }
+
+    if (username !== "") {
+        console.log("ajunge")
+        toDoListName.innerText = username + "'s To Do List!"
+        document.querySelector(".popUpMain").style.display = "none";
+
+    }
+}
+
+function focusAlwaysOn() {
+    setTimeout(function () {
+        nameInput.focus();
+    });
+}
+
+function helloGreeting() {
+    hiButton.innerText = "Hi " + nameInput.value
+}
+
+function saveUserNameInLS() {
+    const username = nameInput.value
+    localStorage.setItem(USERNAME_STORAGE_KEY, JSON.stringify(username))
+    toDoListName.innerText = username + "'s To Do List!"
+    document.querySelector(".popUpMain").style.display = "none";
+
+
 }
