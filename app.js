@@ -8,8 +8,6 @@
 // };
 
 
-// TODO FIX BUG ADD TO DO WHEN FILTERED
-
 // Constants
 const TO_DO_STORAGE_KEY = "to-dos"
 const USERNAME_STORAGE_KEY = "username"
@@ -32,6 +30,7 @@ toDoList.addEventListener('click', deleteAndCheck);
 filterOption.addEventListener("click", filterToDo);
 nameInput.addEventListener("blur", focusAlwaysOn);
 nameInput.addEventListener("input", helloGreeting);
+nameInput.addEventListener("keypress", checkIfEnter);
 hiButton.addEventListener("click", saveUserNameInLS);
 
 // Functions
@@ -53,6 +52,13 @@ function deleteAndCheck(event) {
         })
 
     }
+
+    // refresh to do list according to current filter
+    toDoDiv.addEventListener('transitionend', function () {
+        filterOption.click()
+    })
+
+
 }
 
 
@@ -91,6 +97,9 @@ function addToDo(event) {
 
     // append to the unordered list
     toDoList.appendChild(toDoDiv)
+
+    // refresh to do list according to current filter
+    filterOption.click()
 
 }
 
@@ -227,7 +236,6 @@ function getUsername() {
     }
 
     if (username !== "") {
-        console.log("ajunge")
         toDoListName.innerText = username + "'s To Do List!"
         document.querySelector(".popUpMain").style.display = "none";
 
@@ -251,4 +259,14 @@ function saveUserNameInLS() {
     document.querySelector(".popUpMain").style.display = "none";
 
 
+}
+
+function checkIfEnter(event) {
+    // If the user presses the "Enter" key on the keyboard
+    if (event.key === "Enter") {
+        // Cancel the default action, if needed
+        event.preventDefault();
+        // Trigger the button element with a click
+        hiButton.click();
+    }
 }
