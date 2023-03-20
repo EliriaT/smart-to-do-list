@@ -11,8 +11,8 @@
 // };
 
 // const notification ={
-//    id: uuid
-//    text :""
+//    id: uuid,
+//    text :"",
 //    remaining:""
 // }
 
@@ -22,11 +22,18 @@
 // la refresh scheduling-ul e resetat, deci e nevoie iarasi sa obtin notificarile din LS
 // sa afisez notificarile deja trecute
 // sa programez  notificarile care inca urmeaza sa apara
+// even after refresh, notifications are scheduled, and seen notifications are persisted till user deletes them
 
-// Constants
-const TO_DO_STORAGE_KEY = "to-dos"
-const USERNAME_STORAGE_KEY = "username"
-const NOTIFICATION_STORAGE_KEY = "notifications"
+// Constants and vars
+const TO_DO_STORAGE_KEY = "to-dos";
+const USERNAME_STORAGE_KEY = "username";
+const NOTIFICATION_STORAGE_KEY = "notifications";
+let currDate = new Date();
+let currYear = currDate.getFullYear();
+let currMonth = currDate.getMonth();
+let currDay = currDate.getDay();
+const months = ["January", "February", "March", "April", "May", "June", "July",
+    "August", "September", "October", "November", "December"];
 
 // Selectors
 const toDoInput = document.querySelector(".todo-input");
@@ -35,12 +42,15 @@ const toDoList = document.querySelector(".todo-list");
 const filterOption = document.querySelector(".filter-todo");
 const nameInput = document.getElementById('nameInput');
 const hiButton = document.querySelector(".hiButton");
-const toDoListName = document.querySelector(".headerName")
-const date = document.getElementById("date")
-const time = document.getElementById("time")
-const notifyInterval = document.querySelector(".notify-interval-select")
-const notifyChoice = document.querySelector(".notify-choice-select")
-
+const toDoListName = document.querySelector(".headerName");
+const date = document.getElementById("date");
+const time = document.getElementById("time");
+const notifyInterval = document.querySelector(".notify-interval-select");
+const notifyChoice = document.querySelector(".notify-choice-select");
+const currentDate = document.querySelector(".current-date");
+const daysTag = document.querySelector(".days ");
+const prevIcon = document.getElementById("prev");
+const nextIcon = document.getElementById("next");
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', getAndDisplayToDosFromLocalStorage);
@@ -54,11 +64,64 @@ nameInput.addEventListener("blur", focusAlwaysOn);
 nameInput.addEventListener("input", helloGreeting);
 nameInput.addEventListener("keypress", checkIfEnter);
 hiButton.addEventListener("click", saveUserNameInLS);
+nextIcon.addEventListener("click", () => {
+    currMonth = currMonth + 1;
+    if (currMonth < 0 || currMonth > 11) {
+        // creating a new date of current year & month and pass it as date value
+        let date = new Date(currYear, currMonth);
+        currYear = date.getFullYear(); // updating current year with new date year
+        currMonth = date.getMonth(); // updating current month with new date month
+    } else {
+        currDate = new Date(); // pass the current date as date value
+    }
+    renderCalendar();
+})
+prevIcon.addEventListener("click", () => {
+    currMonth = currMonth - 1;
+    if (currMonth < 0 || currMonth > 11) {
+        // creating a new date of current year & month and pass it as date value
+        let date = new Date(currYear, currMonth);
+        currYear = date.getFullYear(); // updating current year with new date year
+        currMonth = date.getMonth(); // updating current month with new date month
+    } else {
+        currDate = new Date(); // pass the current date as date value
+    }
+    renderCalendar();
+})
 
-// Functions
 
+// Function calls
 // schedule checking deadling every 30 minutes
 setInterval(checkDeadline, 1000 * 60 * 30)
+renderCalendar()
+
+// Functions
+function renderCalendar() {
+    let firstDayOfMonth = new Date(currYear, currMonth, 1).getDay();
+    let lastDateOfMonth = new Date(currYear, currMonth + 1, 0).getDate();
+    let lastDayOfMonth = new Date(currYear, currMonth, lastDateOfMonth).getDay();
+    let lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate();
+
+    let liTag = "";
+
+    for (let i = firstDayOfMonth; i > 0; i--) { // creating li of previous month last days
+        liTag += `<li class="inactive">${lastDateofLastMonth - i + 1}</li>`;
+    }
+
+    for (let i = 1; i <= lastDateOfMonth; i++) { // creating li of all days of current month
+        // adding active class to li if the current day, month, and year matched
+        let isToday = i === currDate.getDate() && currMonth === new Date().getMonth() && currYear === new Date().getFullYear() ? "active" : "";
+        liTag += `<li class="${isToday}">${i}</li>`;
+    }
+
+    for (let i = lastDayOfMonth; i < 6; i++) { // creating li of next month first days
+        liTag += `<li class="inactive">${i - lastDayOfMonth + 1}</li>`;
+    }
+
+    currentDate.innerText = `${months[currMonth]} ${currYear}`;
+    daysTag.innerHTML = liTag;
+
+}
 
 function deleteAndCheck(event) {
     const item = event.target;   // the object that was pressed
@@ -550,5 +613,6 @@ function scheduleOneToDo(toDo) {
 
     }
 }
+
 
 
