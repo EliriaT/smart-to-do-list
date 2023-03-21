@@ -344,10 +344,10 @@ form {
 #notification-area {
 
     position: fixed;
-    top: 50vh;
+    top: 90vh;
     right: 10px;
     width: 250px;
-    height: 50vh;
+    height: 10vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;

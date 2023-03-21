@@ -212,6 +212,10 @@ function deleteAndCheck(event) {
 function addToDo(event) {
     event.preventDefault()      //to prevent the default refresh of the page on submit
 
+    if (toDoInput.value.length <= 2 || toDoInput.value.length >= 90) {
+        alert("Sorry! Too many characters. The task name should have at  least 3 chars and at most 90 chars");
+        return
+    }
     const toDoTask = toDoInput.value;
     toDoInput.value = "";
 
@@ -613,7 +617,7 @@ function getNotifications() {
 function saveNotificationsInLS(text, remainingTime, uuid) {
     let notifications = getNotifications();
 
-    const notification = new notifObj(uuid, text, false, remainingTime);
+    const notification = new notifObj(uuid, text, remainingTime);
 
     notifications.push(notification)
     localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(notifications))
@@ -693,11 +697,7 @@ function filterToDosByDate(event) {
     if (event.target.nodeName === "LI") {
         const day = event.target;
 
-        const selectedDate = new Date(day.id);
-        console.log(selectedDate);
-
         let styleElem = document.head.appendChild(document.createElement("style"));
-
 
         filterDate = new Date(day.id);
 
