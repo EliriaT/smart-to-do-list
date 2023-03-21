@@ -29,7 +29,7 @@ class toDoClass {
 // }
 
 class notifObj {
-    constructor(id, text, done, remaining) {
+    constructor(id, text, remaining) {
         this.id = id;
         this.text = text;
         this.remaining = remaining;
@@ -613,7 +613,7 @@ function getNotifications() {
 function saveNotificationsInLS(text, remainingTime, uuid) {
     let notifications = getNotifications();
 
-    const notification = new notifObj(uuid, text, remainingTime);
+    const notification = new notifObj(uuid, text, false, remainingTime);
 
     notifications.push(notification)
     localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(notifications))
