@@ -145,6 +145,15 @@ form {
     background: #E57440;
 }
 
+.delete-btn:hover {
+    background: #fa3d3d;
+}
+
+.complete-btn:hover {
+    background: #24ad05;
+    /*color: #3E5622;*/
+}
+
 /*the class of the li item*/
 .todo-item {
     padding: 0 0.5rem;
@@ -510,9 +519,17 @@ header .icons span:hover {
     color: #fff;
 }
 
+.days li.active:hover {
+    color: black;
+}
+
 .days li.active::before {
     background: #3E5622;
     /*background: #4dada7;*/
+}
+
+.days li.active:hover::before {
+    background: #f2f2f2;
 }
 
 .show-all {

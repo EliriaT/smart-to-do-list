@@ -1,6 +1,6 @@
 "use strict";
 
-// const toDoLS = {
+// const toDoObj = {
 //   id: uuid,
 //   text: "",
 //   done: bool,
@@ -10,11 +10,31 @@
 //   notifyChoice: month/days/hours
 // };
 
+class toDoClass {
+    constructor(id, text, done, date, time, notifyBeforeValue, notifyChoice) {
+        this.id = id;
+        this.text = text;
+        this.done = done;
+        this.time = time;
+        this.notifyBeforeValue = notifyBeforeValue;
+        this.notifyChoice = notifyChoice;
+    }
+}
+
 // const notification ={
 //    id: uuid,
 //    text :"",
 //    remaining:""
 // }
+
+class notifObj {
+    constructor(id, text, done, remaining) {
+        this.id = id;
+        this.text = text;
+        this.remaining = remaining;
+    }
+}
+
 
 // creez un to do
 // programez notificarea data nu e in trecut deadline-ul
@@ -159,6 +179,7 @@ function renderCalendar() {
 
 }
 
+// function for deleting or marking as done todos
 function deleteAndCheck(event) {
     const item = event.target;   // the object that was pressed
     const toDoDiv = item.parentElement
@@ -186,7 +207,7 @@ function deleteAndCheck(event) {
 
 }
 
-
+// function to add a new to do. Stores it in LS
 function addToDo(event) {
     event.preventDefault()      //to prevent the default refresh of the page on submit
 
@@ -196,9 +217,6 @@ function addToDo(event) {
     // create todo div
     const toDoDiv = document.createElement("div");
     toDoDiv.classList.add("todo");
-
-    // const firstRowDiv = document.createElement("div")
-    // firstRowDiv.classList.add("todo");
 
     // create li
     const newToDoLI = document.createElement("li");
@@ -214,7 +232,6 @@ function addToDo(event) {
     const deleteButton = document.createElement("button");
     deleteButton.innerHTML = '<i class="fas fa-trash"></i>';
     deleteButton.classList.add("delete-btn");
-
 
     const calendarIcon = document.createElement("i")
     calendarIcon.classList.add("fa-regular")
@@ -257,10 +274,12 @@ function addToDo(event) {
     // refresh to do list according to current filter
     filterOption.click()
 
+    // check if it is not with late deadline
     checkDeadline()
 
     showAll = true;
-    // reset the background of the last clicked date
+
+    // reset the background of the last clicked calendar date
     let styleElem = document.head.appendChild(document.createElement("style"));
     styleElem.innerHTML = `li[id='${previousSelectedDateID}']::before {background: transparent; }`;
     filterOption.click();
@@ -335,16 +354,17 @@ function getToDosFromLS() {
 function saveToDoInLocalStorage(toDo, toDoDiv, dateV, timeV, interval, choice) {
     let toDoItems = getToDosFromLS();
 
-    const toDoObj = {
-        id: crypto.randomUUID(),
-        text: toDo,
-        done: false,
-        date: dateV,
-        time: timeV,
-        notifyBeforeValue: interval,
-        notifyChoice: choice
-
-    };
+    const toDoObj = new toDoClass(crypto.randomUUID(), toDo, false, dateV, timeV, interval, choice)
+    // const toDoObj = {
+    //     id: crypto.randomUUID(),
+    //     text: toDo,
+    //     done: false,
+    //     date: dateV,
+    //     time: timeV,
+    //     notifyBeforeValue: interval,
+    //     notifyChoice: choice
+    //
+    // };
 
     toDoDiv.id = toDoObj.id
 
@@ -592,12 +612,7 @@ function getNotifications() {
 function saveNotificationsInLS(text, remainingTime, uuid) {
     let notifications = getNotifications();
 
-    const notification = {
-        id: uuid,
-        text: text,
-        remaining: remainingTime
-
-    };
+    const notification = new notifObj(uuid, text, remainingTime);
 
     notifications.push(notification)
     localStorage.setItem(NOTIFICATION_STORAGE_KEY, JSON.stringify(notifications))
@@ -620,23 +635,11 @@ function scheduleNotifications() {
     let toDos = getToDosFromLS();
 
     toDos.forEach(function (toDo) {
-        // sa formez o data noua
-        // sa verific ca data la to do nu e deja din trecut
-        // sa gasesc data pentru notificare
-        // sa verific ca data  pentru notificare nu e in trecut
-        // daca nu e in trecut, sa setez timerul pentru notificare
-
         scheduleOneToDo(toDo)
     })
 
     let notifications = getNotifications()
     notifications.forEach(function (n) {
-        // sa formez o data noua
-        // sa verific ca data la to do nu e deja din trecut
-        // sa gasesc data pentru notificare
-        // sa verific ca data  pentru notificare nu e in trecut
-        // daca nu e in trecut, sa setez timerul pentru notificare
-
         notify(n.text, n.remaining, n.id)
     })
 
@@ -664,7 +667,7 @@ function scheduleOneToDo(toDo) {
                 toDoDate.setMinutes(toDoDate.getMinutes() - parseInt(toDo.notifyBeforeValue));
                 break;
         }
-        // console.log(toDo.notifyBeforeValue)
+
     }
     // check if notify time is not in the past
     if (toDoDate - currentDateTime > 0) {
