@@ -18,9 +18,13 @@ body {
     justify-items: center;
     align-items: start;
     display: grid;
-    grid-template-columns: 1fr 2fr;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 
+.right-grid {
+    grid-column: 2 / 8;
+
+}
 
 .main-header {
 
@@ -140,16 +144,18 @@ form {
 
 .delete-btn {
 
-    border-top-right-radius: 8px;
-    border-bottom-right-radius: 8px;
+    /*border-top-right-radius: 8px;*/
+    /*border-bottom-right-radius: 8px;*/
     background: #E57440;
 }
 
 .delete-btn:hover {
+    cursor: pointer;
     background: #fa3d3d;
 }
 
 .complete-btn:hover {
+    cursor: pointer;
     background: #24ad05;
     /*color: #3E5622;*/
 }
@@ -336,11 +342,12 @@ form {
 
 /*notifications*/
 #notification-area {
+
     position: fixed;
-    top: 0px;
+    top: 50vh;
     right: 10px;
     width: 250px;
-    height: 100vh;
+    height: 50vh;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
@@ -424,11 +431,13 @@ form {
 .wrapper {
     display: grid;
     align-self: center;
-    justify-self: end;
+    justify-self: center;
     color: black;
     width: 450px;
     background: #fff;
     border-radius: 10px;
+    grid-column: 1 / 2;
+    margin-left: 5vw;
 }
 
 .wrapper header {
