@@ -31,9 +31,10 @@ const NOTIFICATION_STORAGE_KEY = "notifications";
 let currDate = new Date();
 let currYear = currDate.getFullYear();
 let currMonth = currDate.getMonth();
-let currDay = currDate.getDay();
+let filterDate = new Date();
 const months = ["January", "February", "March", "April", "May", "June", "July",
     "August", "September", "October", "November", "December"];
+let showAll = true;
 
 // Selectors
 const toDoInput = document.querySelector(".todo-input");
@@ -51,6 +52,8 @@ const currentDate = document.querySelector(".current-date");
 const daysTag = document.querySelector(".days ");
 const prevIcon = document.getElementById("prev");
 const nextIcon = document.getElementById("next");
+const showAllButton = document.querySelector(".show-all-button");
+
 
 // Event Listeners
 document.addEventListener('DOMContentLoaded', getAndDisplayToDosFromLocalStorage);
@@ -88,34 +91,67 @@ prevIcon.addEventListener("click", () => {
     }
     renderCalendar();
 })
-
+daysTag.addEventListener("click", filterToDosByDate)
+showAllButton.addEventListener("click", toggleShowAll)
 
 // Function calls
 // schedule checking deadling every 30 minutes
 setInterval(checkDeadline, 1000 * 60 * 30)
 renderCalendar()
 
+
 // Functions
+
+function checkIfContainsDate(listDate, date) {
+    for (let i = 0; i < listDate.length; i++) {
+        if (listDate[i].getDate() === date.getDate() && listDate[i].getMonth() === date.getMonth() && listDate[i].getFullYear() === date.getFullYear()) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function renderCalendar() {
-    let firstDayOfMonth = new Date(currYear, currMonth, 1).getDay();
-    let lastDateOfMonth = new Date(currYear, currMonth + 1, 0).getDate();
-    let lastDayOfMonth = new Date(currYear, currMonth, lastDateOfMonth).getDay();
-    let lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate();
+    const allToDos = getToDosFromLS();
+    let allDates = []
+    for (let i = 0; i < allToDos.length; i++) {
+        allDates.push(new Date(allToDos[i].date))
+    }
+
+    let firstDayOfMonth = new Date(currYear, currMonth, 1).getDay();                // getting first day of month 0-6
+    let lastDateOfMonth = new Date(currYear, currMonth + 1, 0).getDate();    // getting last date of month
+    let lastDayOfMonth = new Date(currYear, currMonth, lastDateOfMonth).getDay();        // getting last day of month  0-6
+    let lastDateofLastMonth = new Date(currYear, currMonth, 0).getDate();           // getting last date of previous month
 
     let liTag = "";
+    let liDate = new Date();
+    const toDoCalendarDiv = '<div class = "to-do-on-day"></div>'
 
     for (let i = firstDayOfMonth; i > 0; i--) { // creating li of previous month last days
-        liTag += `<li class="inactive">${lastDateofLastMonth - i + 1}</li>`;
+        liDate = new Date(currYear, currMonth - 1, lastDateofLastMonth - i + 1)
+        const isbusyDay = checkIfContainsDate(allDates, liDate)
+        const inlineDiv = isbusyDay === true ? toDoCalendarDiv : ""
+
+        liTag += `<li class="inactive calendar-day" id="${liDate.toDateString()}">${lastDateofLastMonth - i + 1} ${inlineDiv} </li>`;
     }
 
     for (let i = 1; i <= lastDateOfMonth; i++) { // creating li of all days of current month
         // adding active class to li if the current day, month, and year matched
         let isToday = i === currDate.getDate() && currMonth === new Date().getMonth() && currYear === new Date().getFullYear() ? "active" : "";
-        liTag += `<li class="${isToday}">${i}</li>`;
+
+        liDate = new Date(currYear, currMonth, i)
+        const isbusyDay = checkIfContainsDate(allDates, liDate)
+        const inlineDiv = isbusyDay === true ? toDoCalendarDiv : ""
+
+        liTag += `<li class="calendar-day ${isToday}" id="${liDate.toDateString()}">${i} ${inlineDiv}</li>`;
     }
 
     for (let i = lastDayOfMonth; i < 6; i++) { // creating li of next month first days
-        liTag += `<li class="inactive">${i - lastDayOfMonth + 1}</li>`;
+        liDate = new Date(currYear, currMonth + 1, i - lastDayOfMonth + 1)
+        const isbusyDay = checkIfContainsDate(allDates, liDate)
+        const inlineDiv = isbusyDay === true ? toDoCalendarDiv : ""
+
+        liTag += `<li class="inactive calendar-day" id="${liDate.toDateString()}">${i - lastDayOfMonth + 1} ${inlineDiv}</li>`;
     }
 
     currentDate.innerText = `${months[currMonth]} ${currYear}`;
@@ -223,32 +259,64 @@ function addToDo(event) {
 
     checkDeadline()
 
-
+    showAll = true;
+    // reset the background of the last clicked date
+    let styleElem = document.head.appendChild(document.createElement("style"));
+    styleElem.innerHTML = `li[id='${previousSelectedDateID}']::before {background: transparent; }`;
+    filterOption.click();
+    renderCalendar();
 }
 
 function filterToDo(event) {
     const filter = event.target.value
     const toDos = toDoList.childNodes;
     toDos.forEach(function (todo) {
-        switch (filter) {
-            case "all":
-                todo.style.display = "flex";
-                break;
-            case "finished":
-                if (todo.classList.contains("completed")) {
+
+        const toDoDeadline = new Date(todo.childNodes[2].textContent)
+        if (showAll) {
+            switch (filter) {
+                case "all":
                     todo.style.display = "flex";
-                } else {
-                    todo.style.display = "none";
-                }
-                break;
-            case "in-progress":
-                if (todo.classList.contains("completed")) {
-                    todo.style.display = "none";
-                } else {
+                    break;
+                case "finished":
+                    if (todo.classList.contains("completed")) {
+                        todo.style.display = "flex";
+                    } else {
+                        todo.style.display = "none";
+                    }
+                    break;
+                case "in-progress":
+                    if (todo.classList.contains("completed")) {
+                        todo.style.display = "none";
+                    } else {
+                        todo.style.display = "flex";
+                    }
+                    break;
+            }
+        } else if (filterDate.getDate() === toDoDeadline.getDate() && filterDate.getMonth() === toDoDeadline.getMonth() && filterDate.getFullYear() === toDoDeadline.getFullYear()) {
+            switch (filter) {
+                case "all":
                     todo.style.display = "flex";
-                }
-                break;
+                    break;
+                case "finished":
+                    if (todo.classList.contains("completed")) {
+                        todo.style.display = "flex";
+                    } else {
+                        todo.style.display = "none";
+                    }
+                    break;
+                case "in-progress":
+                    if (todo.classList.contains("completed")) {
+                        todo.style.display = "none";
+                    } else {
+                        todo.style.display = "flex";
+                    }
+                    break;
+            }
+        } else {
+            todo.style.display = "none";
         }
+
     })
 }
 
@@ -368,7 +436,7 @@ function getAndDisplayToDosFromLocalStorage() {
     })
     nameInput.value = ""
     checkDeadline()
-
+    filterOption.click();
 }
 
 
@@ -614,5 +682,54 @@ function scheduleOneToDo(toDo) {
     }
 }
 
+let previousSelectedDateID = ""
 
+function filterToDosByDate(event) {
+    // console.log("event")
+    if (event.target.nodeName === "LI") {
+        const day = event.target;
+
+        const selectedDate = new Date(day.id);
+        console.log(selectedDate);
+
+        let styleElem = document.head.appendChild(document.createElement("style"));
+
+
+        filterDate = new Date(day.id);
+
+        if (previousSelectedDateID === day.id) {
+            filterDate = new Date();
+            styleElem.innerHTML = `li[id='${previousSelectedDateID}']::before {background: transparent; }
+                                   li[id='${previousSelectedDateID}']:hover::before {background: #f2f2f2; }`;
+        } else {
+            styleElem.innerHTML = `li[id='${day.id}']::before {background: #7cae7a;}
+                                   li[id='${day.id}']:hover::before {background: #4d804c;}
+                                   li[id='${previousSelectedDateID}']::before {background: transparent; }
+                                   li[id='${previousSelectedDateID}']:hover::before {background: #f2f2f2; }`;
+        }
+
+        previousSelectedDateID = filterDate.toDateString();
+
+        showAll = false;
+        filterOption.click();
+    }
+}
+
+function toggleShowAll() {
+    showAll = !showAll;
+
+    // if (showAll) {
+    let styleElem = document.head.appendChild(document.createElement("style"));
+    styleElem.innerHTML = `li[id='${previousSelectedDateID}']::before {background: transparent; }`;
+
+    if (showAll === false) {
+        filterDate = new Date();
+        showAllButton.innerText = "Show All"
+    } else {
+        showAllButton.innerText = "Today To Do"
+    }
+
+
+    filterOption.click();
+}
 

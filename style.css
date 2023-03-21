@@ -22,12 +22,12 @@ body {
 }
 
 
-header {
+.main-header {
 
     font-size: 1.5rem;
 }
 
-header, form {
+.main-header, form {
     min-height: 20vh;
     display: flex;
     justify-content: center;
@@ -413,6 +413,7 @@ form {
 }
 
 .wrapper {
+    display: grid;
     align-self: center;
     justify-self: end;
     color: black;
@@ -459,6 +460,7 @@ header .current-date {
 }
 
 .calendar ul li {
+    display: grid;
     position: relative;
     width: calc(100% / 7);
 }
@@ -477,6 +479,7 @@ header .current-date {
 
 .days li:hover::before {
     background: #f2f2f2;
+    /*color: #4d804c;*/
 }
 
 header .icons span {
@@ -509,4 +512,39 @@ header .icons span:hover {
 
 .days li.active::before {
     background: #3E5622;
+    /*background: #4dada7;*/
+}
+
+.show-all {
+    display: flex;
+    justify-content: end;
+    align-content: start;
+    padding: 1rem;
+}
+
+.show-all-button {
+    padding: 0.5rem 0.8rem;
+
+    background: #ee6d00;
+    cursor: pointer;
+    color: #eee;
+    border: none;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+    margin-right: 0.4rem;
+    font-weight: bolder;
+}
+
+.show-all-button:hover {
+    background: #fd8824;
+    /*color: #3E5622;*/
+}
+
+.to-do-on-day {
+    background-color: #ee6d00;
+    /*width: calc(100% / 7);*/
+    width: 1rem;
+    height: 0.5rem;
+    border-radius: 40%;
+    justify-self: center;
 }
