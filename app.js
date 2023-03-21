@@ -15,6 +15,7 @@ class toDoClass {
         this.id = id;
         this.text = text;
         this.done = done;
+        this.date = date
         this.time = time;
         this.notifyBeforeValue = notifyBeforeValue;
         this.notifyChoice = notifyChoice;
