@@ -190,19 +190,20 @@ function deleteAndCheck(event) {
     }
     if (item.classList[0] === "delete-btn") {
         // small animation on delete
-        toDoDiv.classList.add("fall-anim")
+        toDoDiv.classList.add("fall-anim");
 
         removeToDoFromLocalStorage(toDoDiv)
 
         toDoDiv.addEventListener('transitionend', function () {
-            item.parentElement.remove()
+            item.parentElement.remove();
         })
 
     }
 
     // refresh to do list according to current filter
     toDoDiv.addEventListener('transitionend', function () {
-        filterOption.click()
+        filterOption.click();
+        renderCalendar();
     })
 
 
